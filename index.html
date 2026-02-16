@@ -12,13 +12,13 @@ p{font-size:16px;line-height:1.7;color:#ddd}
 input{width:100%;padding:15px;font-size:18px;border:none;border-radius:8px;margin-top:20px}
 button{width:100%;padding:15px;background:#22c55e;border:none;border-radius:8px;font-size:18px;color:#000;margin-top:15px;cursor:pointer}
 button:hover{background:#16a34a}
+button:disabled{background:#ccc;cursor:not-allowed}
 #popup{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center}
 .popup-box{background:#fff;color:#000;padding:30px;border-radius:10px;text-align:center;max-width:300px}
 .popup-box h2{color:#16a34a}
 </style>
 </head>
 <body>
-
 <div class="container">
 <h1>اشترك مجاناً 📲</h1>
 <p>
@@ -27,11 +27,9 @@ button:hover{background:#16a34a}
 والمحلات في جبل محسن<br><br>
 🎁 بالإضافة إلى روزنامة رقمية مجانية
 </p>
-
 <input type="tel" id="phone" placeholder="أدخل رقم هاتفك" required>
 <button onclick="sendData()">اشترك الآن</button>
 </div>
-
 <div id="popup">
   <div class="popup-box">
     <h2>تم التسجيل بنجاح ✅</h2>
@@ -43,36 +41,47 @@ button:hover{background:#16a34a}
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz0OKMCT_6Wv2Ekk1yxzoHadhvsWH5TjOlA1C89sQk3x40qGLVHuppa-fdQ7hIsxJtf/exec";
 
-function sendData(){
+async function sendData(){
   const phone = document.getElementById("phone").value.trim();
-
+  const btn = document.querySelector("button");
+  
   if(phone.length < 8){
-    alert("Invalid phone number");
+    alert("الرجاء إدخال رقم هاتف صحيح");
     return;
   }
-
-  fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",   // 🔴 THIS is the key
-    headers: {
-      "Content-Type": "text/plain"
-    },
-    body: JSON.stringify({
-      phone: phone,
-      source: "Landing Page"
-    })
-  }).then(() => {
-    document.getElementById("popup").style.display = "flex";
-    document.getElementById("phone").value = "";
-  });
+  
+  btn.disabled = true;
+  btn.textContent = "جاري الإرسال...";
+  
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        phone: phone,
+        source: "Landing Page"
+      })
+    });
+    
+    const result = await response.json();
+    
+    if(result.success || response.ok) {
+      document.getElementById("popup").style.display = "flex";
+      document.getElementById("phone").value = "";
+    } else {
+      alert("حدث خطأ. الرجاء المحاولة مرة أخرى");
+    }
+  } catch(error) {
+    console.error("Error:", error);
+    alert("حدث خطأ في الاتصال");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "اشترك الآن";
+  }
 }
 
 function closePopup(){
   document.getElementById("popup").style.display="none";
 }
 </script>
-
-
-
 </body>
 </html>
