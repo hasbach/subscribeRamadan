@@ -42,11 +42,18 @@ button:disabled{background:#ccc;cursor:not-allowed}
 const API_URL = "https://script.google.com/macros/s/AKfycbz0OKMCT_6Wv2Ekk1yxzoHadhvsWH5TjOlA1C89sQk3x40qGLVHuppa-fdQ7hIsxJtf/exec";
 
 async function sendData(){
-  const phone = document.getElementById("phone").value.trim();
+  let phone = document.getElementById("phone").value.trim();
   const btn = document.querySelector("button");
   
-  if(phone.length < 8){
-    alert("الرجاء إدخال رقم هاتف صحيح");
+  // Clean the phone number - remove spaces, dashes, parentheses
+  phone = phone.replace(/[\s\-\(\)]/g, '');
+  
+  // Remove country code prefixes
+  phone = phone.replace(/^(\+961|00961|961)/, '');
+  
+  // Validate: should be exactly 8 digits
+  if(!/^\d{8}$/.test(phone)){
+    alert("الرجاء إدخال رقم هاتف لبناني صحيح (8 أرقام)");
     return;
   }
   
@@ -85,4 +92,5 @@ function closePopup(){
 </script>
 </body>
 </html>
+
 
