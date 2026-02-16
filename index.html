@@ -40,26 +40,30 @@ button:hover{background:#16a34a}
     <button onclick="closePopup()">تم</button>
   </div>
 </div>
-
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz0OKMCT_6Wv2Ekk1yxzoHadhvsWH5TjOlA1C89sQk3x40qGLVHuppa-fdQ7hIsxJtf/exec";
 
 function sendData(){
-  const phone = document.getElementById("phone").value;
-  if(phone.length < 7){
-    alert("يرجى إدخال رقم صحيح");
+  const phone = document.getElementById("phone").value.trim();
+
+  if(phone.length < 8){
+    alert("Invalid phone number");
     return;
   }
 
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      phone:phone,
-      source:"Landing Page"
+  fetch(API_URL, {
+    method: "POST",
+    mode: "no-cors",   // 🔴 THIS is the key
+    headers: {
+      "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({
+      phone: phone,
+      source: "Landing Page"
     })
-  }).then(()=>{
-    document.getElementById("popup").style.display="flex";
-    document.getElementById("phone").value="";
+  }).then(() => {
+    document.getElementById("popup").style.display = "flex";
+    document.getElementById("phone").value = "";
   });
 }
 
@@ -67,6 +71,8 @@ function closePopup(){
   document.getElementById("popup").style.display="none";
 }
 </script>
+
+
 
 </body>
 </html>
